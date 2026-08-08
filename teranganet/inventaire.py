@@ -51,3 +51,9 @@ def charger_inventaire(chemin_fichier):
         equipements.append(equipement)
 
     return sites, equipements
+
+
+def trouver_equipement(nom, equipements):
+    for equipement in equipements:
+        if equipement.nom == nom:
+            return equipement
