@@ -1,0 +1,53 @@
+import yaml
+
+
+class Site:
+    def __init__(self, code, nom, latitude, longitude):
+        self.code = code
+        self.nom = nom
+        self.latitude = latitude
+        self.longitude = longitude
+
+
+class Equipement:
+    def __init__(self, nom, type, ip, statut, site):
+        self.nom = nom
+        self.type = type
+        self.ip = ip
+        self.statut = statut
+        self.site = site
+
+
+def trouver_site(code, sites):
+    for site in sites:
+        if site.code == code:
+            return site
+
+
+def charger_inventaire(chemin_fichier):
+    with open(chemin_fichier, encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+
+    sites = []
+    for site_dict in data["sites"]:
+        site = Site(
+            site_dict["code"],
+            site_dict["nom"],
+            site_dict["latitude"],
+            site_dict["longitude"]
+        )
+        sites.append(site)
+
+    equipements = []
+    for equipement_dict in data["equipements"]:
+        site = trouver_site(equipement_dict["site"], sites)
+        equipement = Equipement(
+            equipement_dict["nom"],
+            equipement_dict["type"],
+            equipement_dict["ip"],
+            equipement_dict["statut"],
+            site
+        )
+        equipements.append(equipement)
+
+    return sites, equipements
