@@ -1,0 +1,52 @@
+---
+sites:
+  - code: DKR
+    nom: Dakar
+    latitude: 14.6928
+    longitude: -17.4467
+  - code: THS
+    nom: Thies
+    latitude: 14.7910
+    longitude: -16.9256
+  - code: STL
+    nom: Saint-Louis
+    latitude: 16.0179
+    longitude: -16.4896
+equipements:
+  - nom: R1-DKR
+    type: routeur
+    ip: 10.10.1.1
+    site: DKR
+    statut: en service
+    exterieur: false
+  - nom: SW1-DKR
+    type: commutateur
+    ip: 10.10.1.2
+    site: DKR
+    statut: en service
+    exterieur: false
+  - nom: ANT1-DKR
+    type: antenne
+    ip: 10.10.1.10
+    site: DKR
+    statut: en service
+    exterieur: true
+  - nom: R1-THS
+    type: routeur
+    ip: 10.20.1.1
+    site: THS
+    statut: en service
+    exterieur: false
+  - nom: ANT1-THS
+    type: antenne
+    ip: 10.20.1.10
+    site: THS
+    statut: en maintenance
+    exterieur: true
+  - nom: ANT1-STL
+    type: antenne
+    ip: 10.30.1.10
+    site: STL
+    statut: en service
+    exterieur: true
+...

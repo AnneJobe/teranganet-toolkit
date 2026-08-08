@@ -1,0 +1,5 @@
+---
+seuils:
+  vent_kmh: 35   # alerte si vent >= seuil, sites avec équipement extérieur
+  temperature_c: 35   # alerte si température >= seuil, tous les sites
+...
