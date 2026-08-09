@@ -27,4 +27,5 @@ def meteo_actuelle(lat, lon):
         return None
 
     data = response.json()
+    data["status_code"] = response.status_code
     return data
