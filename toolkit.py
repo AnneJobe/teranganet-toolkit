@@ -26,20 +26,14 @@ def commande_show(nom):
 
 def commande_meteo(code_site):
     sites, equipements = charger_inventaire("data/equipements.yaml")
-
     site = trouver_site(code_site, sites)
-
     if site is None:
         print(f"Erreur : aucun site avec le code '{code_site}' dans l'inventaire.")
         return
-
     data = meteo_actuelle(site.latitude, site.longitude)
-
     if data is None:
         return
-
     current = data["current"]
-
     print(f"Météo actuelle — {site.nom} ({site.latitude}, {site.longitude})")
     print(f" Température : {current['temperature_2m']} °C")
     print(f" Vent : {current['wind_speed_10m']} km/h")
@@ -51,7 +45,6 @@ def main():
     parser.add_argument("commande", choices=["inventaire", "show", "meteo"])
     parser.add_argument("argument", nargs="?", default=None)
     args = parser.parse_args()
-
     if args.commande == "inventaire":
         commande_inventaire()
     elif args.commande == "show":
