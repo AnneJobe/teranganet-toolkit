@@ -10,12 +10,13 @@ class Site:
 
 
 class Equipement:
-    def __init__(self, nom, type, ip, statut, site):
+    def __init__(self, nom, type, ip, statut, site, exterieur):
         self.nom = nom
         self.type = type
         self.ip = ip
         self.statut = statut
         self.site = site
+        self.exterieur = exterieur
 
 
 def trouver_site(code, sites):
@@ -46,14 +47,13 @@ def charger_inventaire(chemin_fichier):
             equipement_dict["type"],
             equipement_dict["ip"],
             equipement_dict["statut"],
-            site
+            site,
+            equipement_dict["exterieur"]
         )
         equipements.append(equipement)
-
     return sites, equipements
-
 
 def trouver_equipement(nom, equipements):
     for equipement in equipements:
         if equipement.nom == nom:
-            return equipement
+            return equipement 
