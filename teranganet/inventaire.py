@@ -25,9 +25,22 @@ def trouver_site(code, sites):
             return site
 
 
+def trouver_equipement(nom, equipements):
+    for equipement in equipements:
+        if equipement.nom == nom:
+            return equipement
+
+
 def charger_inventaire(chemin_fichier):
-    with open(chemin_fichier, encoding="utf-8") as f:
-        data = yaml.safe_load(f)
+    try:
+        with open(chemin_fichier, encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+    except FileNotFoundError:
+        print(f"Erreur : le fichier '{chemin_fichier}' est introuvable.")
+        return None, None
+    except yaml.YAMLError:
+        print(f"Erreur : le fichier '{chemin_fichier}' contient du YAML mal formé.")
+        return None, None
 
     sites = []
     for site_dict in data["sites"]:
@@ -51,9 +64,5 @@ def charger_inventaire(chemin_fichier):
             equipement_dict["exterieur"]
         )
         equipements.append(equipement)
-    return sites, equipements
 
-def trouver_equipement(nom, equipements):
-    for equipement in equipements:
-        if equipement.nom == nom:
-            return equipement 
+    return sites, equipements
