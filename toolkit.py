@@ -3,6 +3,7 @@ import sys
 
 from teranganet.inventaire import charger_inventaire, trouver_equipement, trouver_site
 from teranganet.meteo import meteo_actuelle
+from teranganet.audit import charger_config, auditer_site
 
 
 def commande_inventaire():
@@ -40,11 +41,49 @@ def commande_meteo(code_site):
     print(f" (source : API Open-Meteo, code HTTP {data['status_code']})")
 
 
+def commande_audit():
+    sites, equipements = charger_inventaire("data/equipements.yaml")
+    seuils = charger_config("config.yaml")
+
+    nombre_alertes = 0
+    for site in sites:
+        resultat = auditer_site(site, equipements, seuils)
+        alertes = resultat["alertes"]
+
+        if not alertes:
+            message_alerte = "OK"
+        else:
+            nombre_alertes += 1
+            messages = []
+            if "VENT" in alertes:
+                messages.append("[ALERTE VENT]")
+            if "TEMPERATURE" in alertes:
+                messages.append("[ALERTE TEMPÉRATURE]")
+            message_alerte = " ".join(messages)
+
+        print(
+            f"{resultat['site'].code} ({resultat['site'].nom}) "
+            f"vent {resultat['vent']} km/h "
+            f"temp {resultat['temperature']} °C "
+            f"{message_alerte}"
+        )
+
+    nombre_exterieurs = sum(
+        1 for equipement in equipements
+        if equipement.exterieur is True
+    )
+    print(
+        f"Bilan : {nombre_alertes} alertes sur {len(sites)} sites. "
+        f"Équipements extérieurs exposés au vent : {nombre_exterieurs}."
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description="TerangaNet Ops Toolkit")
-    parser.add_argument("commande", choices=["inventaire", "show", "meteo"])
+    parser.add_argument("commande", choices=["inventaire", "show", "meteo", "audit"])
     parser.add_argument("argument", nargs="?", default=None)
     args = parser.parse_args()
+
     if args.commande == "inventaire":
         commande_inventaire()
     elif args.commande == "show":
@@ -57,6 +96,8 @@ def main():
             print("Erreur : la commande 'meteo' nécessite un code de site.")
             return
         commande_meteo(args.argument)
+    elif args.commande == "audit":
+        commande_audit()
 
 
 if __name__ == "__main__":
