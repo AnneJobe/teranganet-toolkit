@@ -1,9 +1,11 @@
 import argparse
+import json
+import os
 import sys
 from teranganet.inventaire import charger_inventaire, trouver_equipement, trouver_site
 from teranganet.meteo import meteo_actuelle
 from teranganet.audit import charger_config, auditer_site
-from teranganet.rapport import construire_rapport, ecrire_rapport
+from teranganet.rapport import construire_rapport, ecrire_rapport, lister_rapports, charger_dernier_rapport
 def commande_inventaire():
     sites, equipements = charger_inventaire("data/equipements.yaml")
     print(f"=== Inventaire TerangaNet — {len(equipements)} équipements, {len(sites)} sites ===")
@@ -70,9 +72,36 @@ def commande_rapport():
     rapport = construire_rapport(sites, equipements, seuils)
     chemin_fichier = ecrire_rapport(rapport)
     print(f"Rapport écrit : {chemin_fichier}")
+def commande_historique():
+    fichiers = lister_rapports()
+    if not fichiers:
+        print("Aucun rapport trouvé dans le dossier 'rapports/'.")
+        return
+    print(f"=== Historique des rapports — {len(fichiers)} rapport(s) ===")
+    for nom_fichier in fichiers:
+        chemin = os.path.join("rapports", nom_fichier)
+        with open(chemin, "r", encoding="utf-8") as f:
+            rapport = json.load(f)
+        nombre_alertes = sum(1 for s in rapport["sites"] if s["alertes"])
+        print(f"{nom_fichier} — {rapport['horodatage']} — {nombre_alertes} alerte(s) sur {len(rapport['sites'])} site(s)")
+    if len(fichiers) >= 2:
+        chemin_avant_dernier = os.path.join("rapports", fichiers[-2])
+        with open(chemin_avant_dernier, "r", encoding="utf-8") as f:
+            avant_dernier = json.load(f)
+        dernier = charger_dernier_rapport()
+        alertes_avant = sum(1 for s in avant_dernier["sites"] if s["alertes"])
+        alertes_dernier = sum(1 for s in dernier["sites"] if s["alertes"])
+        print()
+        print(f"Comparaison avec le rapport précédent ({avant_dernier['horodatage']} -> {dernier['horodatage']}) :")
+        if alertes_dernier > alertes_avant:
+            print(f" Dégradation : {alertes_avant} -> {alertes_dernier} alertes.")
+        elif alertes_dernier < alertes_avant:
+            print(f" Amélioration : {alertes_avant} -> {alertes_dernier} alertes.")
+        else:
+            print(f" Stable : {alertes_dernier} alertes.")
 def main():
     parser = argparse.ArgumentParser(description="TerangaNet Ops Toolkit")
-    parser.add_argument("commande", choices=["inventaire", "show", "meteo", "audit", "rapport"])
+    parser.add_argument("commande", choices=["inventaire", "show", "meteo", "audit", "rapport", "historique"])
     parser.add_argument("argument", nargs="?", default=None)
     args = parser.parse_args()
     if args.commande == "inventaire":
@@ -91,5 +120,7 @@ def main():
         commande_audit()
     elif args.commande == "rapport":
         commande_rapport()
+    elif args.commande == "historique":
+        commande_historique()
 if __name__ == "__main__":
     main()
