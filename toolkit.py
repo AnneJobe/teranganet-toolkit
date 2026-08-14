@@ -8,11 +8,15 @@ from teranganet.audit import charger_config, auditer_site
 from teranganet.rapport import construire_rapport, ecrire_rapport, lister_rapports, charger_dernier_rapport
 def commande_inventaire():
     sites, equipements = charger_inventaire("data/equipements.yaml")
+    if sites is None:
+        return
     print(f"=== Inventaire TerangaNet — {len(equipements)} équipements, {len(sites)} sites ===")
     for e in equipements:
         print(e.site.code, f"({e.site.nom})", e.nom, e.type, e.ip, e.statut)
 def commande_show(nom):
     sites, equipements = charger_inventaire("data/equipements.yaml")
+    if sites is None:
+        return
     equipement = trouver_equipement(nom, equipements)
     if equipement is None:
         print(f"Erreur : aucun équipement nommé '{nom}' dans l'inventaire.")
@@ -23,6 +27,8 @@ def commande_show(nom):
     print(f" Statut : {equipement.statut}")
 def commande_meteo(code_site):
     sites, equipements = charger_inventaire("data/equipements.yaml")
+    if sites is None:
+        return
     site = trouver_site(code_site, sites)
     if site is None:
         print(f"Erreur : aucun site avec le code '{code_site}' dans l'inventaire.")
@@ -37,6 +43,8 @@ def commande_meteo(code_site):
     print(f" (source : API Open-Meteo, code HTTP {data['status_code']})")
 def commande_audit():
     sites, equipements = charger_inventaire("data/equipements.yaml")
+    if sites is None:
+        return
     seuils = charger_config("config.yaml")
     nombre_alertes = 0
     for site in sites:
@@ -68,6 +76,8 @@ def commande_audit():
     )
 def commande_rapport():
     sites, equipements = charger_inventaire("data/equipements.yaml")
+    if sites is None:
+        return
     seuils = charger_config("config.yaml")
     rapport = construire_rapport(sites, equipements, seuils)
     chemin_fichier = ecrire_rapport(rapport)
