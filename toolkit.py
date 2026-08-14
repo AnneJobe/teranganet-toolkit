@@ -49,7 +49,11 @@ def commande_audit():
     nombre_alertes = 0
     for site in sites:
         resultat = auditer_site(site, equipements, seuils)
+        if resultat is None:
+            continue
+
         alertes = resultat["alertes"]
+
         if not alertes:
             message_alerte = "OK"
         else:
