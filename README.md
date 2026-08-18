@@ -1,3 +1,4 @@
+
 # TerangaNet Ops Toolkit
 
 Outil CLI pour surveiller les conditions météo sur les sites TerangaNet (Dakar, Thiès, Saint-Louis) et lever des alertes en cas de vent fort ou de forte chaleur.
@@ -53,6 +54,11 @@ python toolkit.py audit
 python toolkit.py rapport
 ```
 Le rapport est écrit dans `rapports/`.
+
+### Consulter l'historique des rapports
+
+```bash
+python toolkit.py historique
 
 ## Configuration
 

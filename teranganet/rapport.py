@@ -36,3 +36,20 @@ def ecrire_rapport(rapport, dossier="rapports"):
     with open(chemin_fichier, "w", encoding="utf-8") as f:
         json.dump(rapport, f, indent=2, ensure_ascii=False)
     return chemin_fichier
+
+def lister_rapports(dossier="rapports"):
+    if not os.path.isdir(dossier):
+        return []
+    fichiers = [f for f in os.listdir(dossier) if f.endswith(".json")]
+    fichiers.sort()
+    return fichiers
+
+
+def charger_dernier_rapport(dossier="rapports"):
+    fichiers = lister_rapports(dossier)
+    if not fichiers:
+        return None
+    dernier = fichiers[-1]
+    chemin = os.path.join(dossier, dernier)
+    with open(chemin, "r", encoding="utf-8") as f:
+        return json.load(f)
